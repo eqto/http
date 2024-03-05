@@ -1,6 +1,12 @@
 package http
 
-import "github.com/valyala/fasthttp"
+import (
+	"bytes"
+	"errors"
+	"io"
+
+	"github.com/valyala/fasthttp"
+)
 
 type Response struct {
 	resp *fasthttp.Response
@@ -19,14 +25,11 @@ func (r *Response) StatusCode() int {
 	return r.resp.StatusCode()
 }
 
-func (r *Response) Body() []byte {
-	if r.resp == nil {
-		return []byte{}
+func (r *Response) Body() io.ReadCloser {
+	buff := bytes.NewBuffer(r.body)
+	return &bodyReader{
+		data: buff,
 	}
-	if r.body == nil {
-		r.body = r.resp.Body()
-	}
-	return r.body
 }
 
 func (r *Response) Error() error {
@@ -39,4 +42,22 @@ func (r *Response) Header() *Header {
 		header.header = &r.resp.Header
 	}
 	return header
+}
+
+type bodyReader struct {
+	data *bytes.Buffer
+}
+
+func (b *bodyReader) ReadAll() ([]byte, error) {
+	return io.ReadAll(b.data)
+}
+func (b *bodyReader) Read(p []byte) (n int, err error) {
+	if (b.data == nil) {
+		return 0, errors.New(`empty body`) 
+	}
+	return b.data.Read(p)
+}
+
+func (b *bodyReader) Close() error {
+	return nil
 }

@@ -53,7 +53,7 @@ func (r *Request) request(timeout time.Duration) (*Response, error) {
 		if  e != nil {
 			return nil, e
 		}
-			req.SetBody(body)
+		req.SetBody(body)
 	}
 	if timeout == 0 {
 		timeout = 60 * time.Second
