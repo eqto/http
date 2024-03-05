@@ -12,10 +12,6 @@ func (r *Response) IsError() bool {
 	return r.err != nil
 }
 
-func (r *Response) RawError() error {
-	return r.err
-}
-
 func (r *Response) StatusCode() int {
 	if r.resp == nil {
 		return 0
@@ -33,9 +29,6 @@ func (r *Response) Body() []byte {
 	return r.body
 }
 
-func (r *Response) Error() string {
-	if r.err == nil {
-		return ``
-	}
-	return r.err.Error()
+func (r *Response) Error() error {
+	return r.err
 }
