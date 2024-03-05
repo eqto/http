@@ -32,3 +32,11 @@ func (r *Response) Body() []byte {
 func (r *Response) Error() error {
 	return r.err
 }
+
+func (r *Response) Header() *Header {
+	header := new(Header)
+	if (r.resp != nil) {
+		header.header = &r.resp.Header
+	}
+	return header
+}

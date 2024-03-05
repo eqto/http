@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"io"
 	"net/url"
 	"time"
 
@@ -11,12 +12,12 @@ import (
 type Request struct {
 	method string
 	url    string
-	body   []byte
+	bodyReader io.Reader
 	header map[string]string
 	query  map[string]any
 }
 
-func (r *Request) request(timeout time.Duration) *Response {
+func (r *Request) request(timeout time.Duration) (*Response, error) {
 	req := fasthttp.AcquireRequest()
 	resp := fasthttp.AcquireResponse()
 	defer func() {
@@ -47,8 +48,12 @@ func (r *Request) request(timeout time.Duration) *Response {
 		}
 	}
 
-	if r.body != nil {
-		req.SetBody(r.body)
+	if r.bodyReader != nil {
+		body, e := io.ReadAll(r.bodyReader)
+		if  e != nil {
+			return nil, e
+		}
+			req.SetBody(body)
 	}
 	if timeout == 0 {
 		timeout = 60 * time.Second
@@ -67,7 +72,7 @@ func (r *Request) request(timeout time.Duration) *Response {
 	if resp != nil {
 		resp.CopyTo(httpResp.resp)
 	}
-	return &httpResp
+	return &httpResp, nil
 }
 
 func (r *Request) SetHeader(key, val string) {
@@ -91,21 +96,21 @@ func (r *Request) setQuery(key string, val any) {
 	r.query[key] = val
 }
 
-func (r *Request) Put(url string, body []byte) *Response {
+func (r *Request) Put(url string, body io.Reader) (*Response, error) {
 	r.method = MethodPut
 	r.url = url
-	r.body = body
+	r.bodyReader = body
 	return r.request(60 * time.Second)
 }
 
-func (r *Request) Get(url string) *Response {
+func (r *Request) Get(url string) (*Response, error) {
 	r.method = MethodGet
 	r.url = url
 	return r.request(60 * time.Second)
 }
-func (r *Request) Post(url string, body []byte) *Response {
+func (r *Request) Post(url string, body io.Reader) (*Response, error) {
 	r.method = MethodPost
 	r.url = url
-	r.body = body
+	r.bodyReader = body
 	return r.request(60 * time.Second)
 }
