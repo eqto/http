@@ -10,8 +10,17 @@ type Header struct {
 
 func (r *Header) Get(key string) string {
 	byteVal := r.header.Peek(key)
-	if (byteVal != nil) {
+	if byteVal != nil {
 		return string(byteVal)
 	}
 	return ``
+}
+
+func (h *Header) Cookie(key string) *Cookie {
+	cookie := new(Cookie)
+	byteCookie := h.header.PeekCookie(key)
+	if cookie.parse(key, byteCookie) {
+		return cookie
+	}
+	return nil
 }

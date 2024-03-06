@@ -38,7 +38,7 @@ func (r *Response) Error() error {
 
 func (r *Response) Header() *Header {
 	header := new(Header)
-	if (r.resp != nil) {
+	if r.resp != nil {
 		header.header = &r.resp.Header
 	}
 	return header
@@ -52,8 +52,8 @@ func (b *bodyReader) ReadAll() ([]byte, error) {
 	return io.ReadAll(b.data)
 }
 func (b *bodyReader) Read(p []byte) (n int, err error) {
-	if (b.data == nil) {
-		return 0, errors.New(`empty body`) 
+	if b.data == nil {
+		return 0, errors.New(`empty body`)
 	}
 	return b.data.Read(p)
 }

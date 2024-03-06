@@ -12,8 +12,9 @@ const (
 	MethodPut  = fasthttp.MethodPut
 )
 
-func Put(url string, body io.Reader) (*Response, error) {
-	req := Request{}
+func Put(url, contentType string, body io.Reader) (*Response, error) {
+	req := Request{method: MethodPut}
+	req.SetHeader(`Content-Type`, contentType)
 	return req.Put(url, body)
 }
 

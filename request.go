@@ -10,11 +10,11 @@ import (
 )
 
 type Request struct {
-	method string
-	url    string
+	method     string
+	url        string
 	bodyReader io.Reader
-	header map[string]string
-	query  map[string]any
+	header     map[string]string
+	query      map[string]any
 }
 
 func (r *Request) request(timeout time.Duration) (*Response, error) {
@@ -50,7 +50,7 @@ func (r *Request) request(timeout time.Duration) (*Response, error) {
 
 	if r.bodyReader != nil {
 		body, e := io.ReadAll(r.bodyReader)
-		if  e != nil {
+		if e != nil {
 			return nil, e
 		}
 		req.SetBody(body)
@@ -72,6 +72,7 @@ func (r *Request) request(timeout time.Duration) (*Response, error) {
 	if resp != nil {
 		resp.CopyTo(httpResp.resp)
 	}
+	httpResp.body = resp.Body()
 	return &httpResp, nil
 }
 
