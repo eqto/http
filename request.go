@@ -115,3 +115,10 @@ func (r *Request) Post(url string, body io.Reader) (*Response, error) {
 	r.bodyReader = body
 	return r.request(60 * time.Second)
 }
+
+func (r *Request) Do() (*Response, error) {
+	return r.request(60 * time.Second)
+}
+func (r *Request) DoTimeout(timeout time.Duration) (*Response, error) {
+	return r.request(timeout)
+}
