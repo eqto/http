@@ -17,7 +17,7 @@ type Request struct {
 	query      map[string]any
 }
 
-func (r *Request) request(timeout time.Duration) (*Response, error) {
+func (r *Request) do(timeout time.Duration) (*Response, error) {
 	req := fasthttp.AcquireRequest()
 	resp := fasthttp.AcquireResponse()
 	defer func() {
@@ -60,8 +60,6 @@ func (r *Request) request(timeout time.Duration) (*Response, error) {
 	}
 	if ctype, ok := r.header[`Content-Type`]; ok {
 		req.Header.SetContentType(ctype)
-	} else {
-		req.Header.SetContentType(`application/json`)
 	}
 
 	httpResp := Response{
@@ -101,24 +99,24 @@ func (r *Request) Put(url string, body io.Reader) (*Response, error) {
 	r.method = MethodPut
 	r.url = url
 	r.bodyReader = body
-	return r.request(60 * time.Second)
+	return r.do(60 * time.Second)
 }
 
 func (r *Request) Get(url string) (*Response, error) {
 	r.method = MethodGet
 	r.url = url
-	return r.request(60 * time.Second)
+	return r.do(60 * time.Second)
 }
 func (r *Request) Post(url string, body io.Reader) (*Response, error) {
 	r.method = MethodPost
 	r.url = url
 	r.bodyReader = body
-	return r.request(60 * time.Second)
+	return r.do(60 * time.Second)
 }
 
 func (r *Request) Do() (*Response, error) {
-	return r.request(60 * time.Second)
+	return r.do(60 * time.Second)
 }
 func (r *Request) DoTimeout(timeout time.Duration) (*Response, error) {
-	return r.request(timeout)
+	return r.do(timeout)
 }

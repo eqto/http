@@ -16,6 +16,13 @@ func (r *Header) Get(key string) string {
 	return ``
 }
 
+func (r *Header) Set(key, value string) {
+	if r.header == nil {
+		r.header = &fasthttp.ResponseHeader{}
+	}
+	r.header.Set(key, value)
+}
+
 func (h *Header) Cookie(key string) *Cookie {
 	cookie := new(Cookie)
 	byteCookie := h.header.PeekCookie(key)
