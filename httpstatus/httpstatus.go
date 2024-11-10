@@ -1,4 +1,4 @@
-package http
+package httpstatus
 
 const (
 	Continue           = 100 // RFC 7231, 6.2.1
